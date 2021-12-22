@@ -581,6 +581,15 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
 
         pazi['text'] ='------ ZA BRISANJE ------' if lista_brisani[current]==True else ';\n'.join(lista_statusa[current])
 
+        Ekod['bg']='#ffffff'
+        Ezadatak['bg']='#ffffff'
+
+        if 'Kod nije prepoznat' in lista_statusa[current]:
+            Ekod['bg']='salmon'
+
+        if 'Broj zadatka izvan dozvoljenog ranga' in lista_statusa[current] or 'Neispravan broj zadatka' in lista_statusa[current]:
+            Ezadatak['bg']='salmon'
+
         loadimage(slikaF)
         Front = True
 
