@@ -66,7 +66,10 @@ def Ucitaj_listu_izmjena(root, Fpromjene, jmbag2kod, BROJ_ZADATAKA):
         jmbag = row[i_jmbag]
         if jmbag != None:
             jmbag = f'{int(jmbag):010}'
-            kod = jmbag2kod[jmbag]
+            if jmbag in jmbag2kod:
+                kod = jmbag2kod[jmbag]
+            else:
+                raise UserWarning(f'JMBAG {jmbag} u tablici promjena nije prepoznat jer se ne pojavljuje u tablici s kodovima.')
 
             for zad in range(1,BROJ_ZADATAKA+1):
                 try:

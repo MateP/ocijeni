@@ -11,11 +11,15 @@ try:
     root = tk.Tk()
     root.withdraw()
     messagebox.showinfo('Uspjeh!', 'Instalacija je uspješno privedena kraju.')
+    root.destroy()
 
 except Exception as e:
     root = tk.Tk()
     root.withdraw()
-    messagebox.showerror('Kritična greška!', 'Instalacija nije dovršena do kraja.\n\n'+''.join(traceback.format_tb(e.__traceback__)))
+    with open('error_log.txt','w') as f:
+        f.write(f'{e}\n'+''.join(traceback.format_tb(e.__traceback__)))
+    messagebox.showerror('Kritična greška!', f'Instalacija nije dovršena do kraja.\n\nError: {e}')
+    root.destroy()
     raise e
 
 # Treba imati instaliran Python3 s opcijom ADD TO PATH!

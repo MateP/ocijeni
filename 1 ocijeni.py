@@ -163,9 +163,13 @@ if __name__ == '__main__':
         root = tk.Tk()
         root.withdraw()
         messagebox.showinfo('Uspjeh!', 'Obrada je uspješno privedena kraju. Datoteke za upload Vas čekaju u folderu sa skenovima.')
+        root.destroy()
 
     except Exception as e:
         root = tk.Tk()
         root.withdraw()
-        messagebox.showerror('Kritična greška!', 'Obrada nije dovršena do kraja. Nemojte nastaviti s uploadom na FERweb prije nego detektirate problem. Podaci mogu biti krivi ili nepotpuni.\n\n'+''.join(traceback.format_tb(e.__traceback__)))
+        with open('error_log.txt','w') as f:
+            f.write(f'{e}\n'+''.join(traceback.format_tb(e.__traceback__)))
+        messagebox.showerror('Kritična greška!', f'Obrada nije dovršena do kraja. Nemojte nastaviti s uploadom na FERweb prije nego detektirate problem. Podaci mogu biti krivi ili nepotpuni.\n\nError: {e}')
+        root.destroy()
         raise e
