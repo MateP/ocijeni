@@ -85,6 +85,21 @@ def Ucitaj_listu_izmjena(root, Fpromjene, jmbag2kod, BROJ_ZADATAKA):
 
     return promjene
 
+def choose_worksheet(root, workbook):
+    popup=tk.Toplevel(root)
+    popup.geometry('+0+0')
+    popup.title('Izaberite worksheet...')
+    choice = tk.IntVar(value=0)
+
+    tk.Label(popup, text='Izaberite worksheet koji sadrži kodove za ovaj ispit:').pack()
+
+    for i in range(len(workbook.worksheets)):
+        tk.Radiobutton(popup, text = workbook.worksheets[i].title, variable = choice, value = i).pack()
+
+    tk.Button(popup, text='Izaberi', command=popup.destroy).pack()
+    root.wait_window(popup)
+    return workbook.worksheets[choice.get()]
+
 class Student:
   def __init__(self, jmbag, ime, prezime, BROJ_ZADATAKA):
     self.jmbag = jmbag
@@ -116,7 +131,7 @@ def Ucitaj_kodove(root,Fkod,dir_path):
     jmbag2kod = dict()
 
     workbook = openpyxl.load_workbook(name, data_only=True)
-    worksheet = workbook.worksheets[0]
+    worksheet = choose_worksheet(root, workbook)
     worksheet_rows = worksheet.values
 
     head = [str(nm).upper() for nm in next(worksheet_rows)]
