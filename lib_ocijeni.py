@@ -49,7 +49,7 @@ def Ucitaj_listu_izmjena(root, Fpromjene, jmbag2kod, BROJ_ZADATAKA):
     file_prom.close()
 
     workbook = openpyxl.load_workbook(prom_ime, data_only=True)
-    worksheet = workbook.worksheets[0]
+    worksheet = choose_worksheet(root, workbook)
 
     promjene = dict()
 
@@ -86,6 +86,9 @@ def Ucitaj_listu_izmjena(root, Fpromjene, jmbag2kod, BROJ_ZADATAKA):
     return promjene
 
 def choose_worksheet(root, workbook):
+    if len(workbook.worksheets)==1:
+        return workbook.worksheets[0]
+
     popup=tk.Toplevel(root)
     popup.geometry('+0+0')
     popup.title('Izaberite worksheet...')
