@@ -8,7 +8,7 @@ from tkinter import messagebox
 try:
     subprocess.check_call(
         [sys.executable, '-m', 'pip', 'install', '-U', 'pip'])
-    for package in ['pillow', 'openpyxl']:
+    for package in ['img2pdf', 'pillow', 'openpyxl']:
         subprocess.check_call(
             [sys.executable, '-m', 'pip', 'install', '-U', package])
 

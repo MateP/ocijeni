@@ -2,6 +2,8 @@ import os
 import csv
 import openpyxl
 import pickle
+import img2pdf
+import io
 from tkinter.filedialog import askopenfile
 from PIL import Image, ImageTk
 import tkinter as tk
@@ -10,7 +12,9 @@ DULJINA_KODA = 3
 BRISAN_ = '---'
 KOD_NEPOZNAT_ = '***'
 
-WHITE_PIXEL = Image.new('RGB', (1, 1))
+with io.BytesIO() as output:
+    Image.new('RGB', (1, 1)).save(output, format="PNG")
+    WHITE_PIXEL = output.getvalue()
 
 
 def popup(root, status):
@@ -269,10 +273,10 @@ def Generiraj_datoteke_za_upload(root, lista, Studenti, dir_path, dir_skenovi, B
         if len(slike) == 0:
             im_list = [WHITE_PIXEL]
         else:
-            im_list = [Image.open(os.path.join(dir_skenovi, sl))
-                       for sl in slike]
+            im_list = [os.path.join(dir_skenovi, sl) for sl in slike]
 
-        im_list[0].save(pdf_filename, save_all=True, append_images=im_list[1:])
+        with open(pdf_filename, "wb") as f:
+            f.write(img2pdf.convert(im_list, engine=img2pdf.Engine.internal))
 
     rmk_file.close()
     csv_file.close()
@@ -319,10 +323,10 @@ def Nebodovani(root, lista, Studenti, dir_path, dir_skenovi, BROJ_ZADATAKA):
         if len(nebodo_sl[zad]) == 0:
             im_list = [WHITE_PIXEL]
         else:
-            im_list = [Image.open(os.path.join(dir_skenovi, sl))
-                       for sl in nebodo_sl[zad]]
+            im_list = [os.path.join(dir_skenovi, sl) for sl in nebodo_sl[zad]]
 
-        im_list[0].save(pdf_filename, save_all=True, append_images=im_list[1:])
+        with open(pdf_filename, "wb") as f:
+            f.write(img2pdf.convert(im_list, engine=img2pdf.Engine.internal))
 
 
 def Ucitaj_podatke_u_studenti(lista, lista_brisani, kod2jmbag, Studenti, BROJ_ZADATAKA, dir_path):
