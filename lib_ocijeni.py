@@ -11,6 +11,8 @@ import tkinter as tk
 DULJINA_KODA = 3
 BRISAN_ = '---'
 KOD_NEPOZNAT_ = '***'
+DEFAULT_bg_COLOR = None
+RED_bg_COLOR = '#FF3D3D'
 
 with io.BytesIO() as output:
     Image.new('RGB', (1, 1)).save(output, format="PNG")
@@ -542,6 +544,36 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
 
     lista_statusa = [[] for _ in range(len(lista))]
 
+    def guess_zadatak(i,lista):
+        zadatak_first_valid_before_the_current = None
+        zadatak_first_valid_after_the_current = None
+
+        tmp_i = i-1
+        while tmp_i>=0:
+            tmp_zad_str = str(lista[tmp_i]['zadatak']).replace(' ','')
+            if tmp_zad_str.isdecimal():
+                zadatak_first_valid_before_the_current = int(tmp_zad_str)
+                break
+            tmp_i -= 1
+
+        tmp_i = i+1
+        while tmp_i<len(lista):
+            tmp_zad_str = str(lista[tmp_i]['zadatak']).replace(' ','')
+            if tmp_zad_str.isdecimal():
+                zadatak_first_valid_after_the_current = int(tmp_zad_str)
+                break
+            tmp_i += 1
+
+        if zadatak_first_valid_before_the_current == zadatak_first_valid_after_the_current:
+            return zadatak_first_valid_before_the_current
+        else:
+            return None
+
+
+
+
+
+
     for i, unos in enumerate(lista):
         kod = unos['kod']
         zadatak = unos['zadatak']
@@ -556,11 +588,19 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
         try:
             zad = int(zadatak)
             if zad < 1 or zad > BROJ_ZADATAKA:
-                lista_statusa[i].append('Broj zadatka izvan dozvoljenog ranga')
-                problematicni.add(i)
+                zadGuessed = guess_zadatak(i,lista)
+                if zadGuessed is not None:
+                    zad = zadGuessed
+                else:
+                    lista_statusa[i].append('Broj zadatka izvan dozvoljenog ranga')
+                    problematicni.add(i)
         except ValueError:
-            lista_statusa[i].append('Neispravan broj zadatka')
-            problematicni.add(i)
+            zadGuessed = guess_zadatak(i,lista)
+            if zadGuessed is not None:
+                zad = zadGuessed
+            else:
+                lista_statusa[i].append('Neispravan broj zadatka')
+                problematicni.add(i)
 
     current = None
     Front = True
@@ -570,7 +610,7 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
         height = int(frame.winfo_screenheight()*0.85)
         width = int(21*height/29.7)
         image = image.resize((width, height), Image.ANTIALIAS)
-        canvas = tk.Canvas(frame, width=width, height=height, bg="#000000")
+        canvas = tk.Canvas(frame, width=width, height=height)
         photo = ImageTk.PhotoImage(image, master=canvas)
         slika['image'] = photo
         slika.photo = photo
@@ -645,14 +685,18 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
         pazi['text'] = '------ ZA BRISANJE ------' if lista_brisani[current] == True else ';\n'.join(
             lista_statusa[current])
 
-        Ekod['bg'] = '#ffffff'
-        Ezadatak['bg'] = '#ffffff'
+        global DEFAULT_bg_COLOR
+        if DEFAULT_bg_COLOR is None:
+            DEFAULT_bg_COLOR = Ekod['bg']
+
+        Ekod['bg'] = DEFAULT_bg_COLOR
+        Ezadatak['bg'] = DEFAULT_bg_COLOR
 
         if 'Kod nije prepoznat' in lista_statusa[current]:
-            Ekod['bg'] = 'salmon'
+            Ekod['bg'] = RED_bg_COLOR
 
         if 'Broj zadatka izvan dozvoljenog ranga' in lista_statusa[current] or 'Neispravan broj zadatka' in lista_statusa[current]:
-            Ezadatak['bg'] = 'salmon'
+            Ezadatak['bg'] = RED_bg_COLOR
 
         loadimage(slikaF)
         Front = True
@@ -766,7 +810,7 @@ def kolizija(root, lista_ijeva_u_koliziji, lista, kod2jmbag, jmbag2kod, BROJ_ZAD
         height = int(frame.winfo_screenheight()*0.85)
         width = int(21*height/29.7)
         image = image.resize((width, height), Image.ANTIALIAS)
-        canvas = tk.Canvas(frame, width=width, height=height, bg="#000000")
+        canvas = tk.Canvas(frame, width=width, height=height)
         photo = ImageTk.PhotoImage(image, master=canvas)
         slika['image'] = photo
         slika.photo = photo
@@ -942,7 +986,7 @@ def Obradi_nebodovane(root, nebodovani, lista, kod2jmbag, jmbag2kod, BROJ_ZADATA
         height = int(frame.winfo_screenheight()*0.85)
         width = int(21*height/29.7)
         image = image.resize((width, height), Image.ANTIALIAS)
-        canvas = tk.Canvas(frame, width=width, height=height, bg="#000000")
+        canvas = tk.Canvas(frame, width=width, height=height)
         photo = ImageTk.PhotoImage(image, master=canvas)
         slika['image'] = photo
         slika.photo = photo
@@ -1182,7 +1226,7 @@ def provjeri_osobu(root, za_provjeriti, old_kod, Studenti, lista, kod2jmbag, jmb
         height = int(frame.winfo_screenheight()*0.85)
         width = int(21*height/29.7)
         image = image.resize((width, height), Image.ANTIALIAS)
-        canvas = tk.Canvas(frame, width=width, height=height, bg="#000000")
+        canvas = tk.Canvas(frame, width=width, height=height)
         photo = ImageTk.PhotoImage(image, master=canvas)
         slika['image'] = photo
         slika.photo = photo
