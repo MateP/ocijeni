@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 import csv
 import openpyxl
@@ -34,12 +35,12 @@ def popup(root, status):
 def Otvori_rmk_podaci(root, Frmk, only_podaci=False):
     if Frmk == None:
         if only_podaci:
-            popup(root, 'Odaberite datoteku podaci*.xlsx...')
+            popup(root, 'Odaberite datoteku podaci.xlsx...')
             file_scan = askopenfile(
-                mode='r', title='Učitajte datoteku \'podaci*.xlsx\'...', filetypes=[("Excel files", ".xlsx .xls")])
+                mode='r', title='Učitajte datoteku \'podaci.xlsx\'...', filetypes=[("Excel files", ".xlsx .xls")])
         else:
             popup(
-                root, 'Odaberite datoteku .rmk u mapi sa skenovima iz CIP-a, ili datoteku podaci*.xlsx...')
+                root, 'Odaberite datoteku .rmk u mapi sa skenovima iz CIP-a, ili datoteku podaci.xlsx...\n\n\n\nPobrinite se da se datoteka podaci.xlsx trenutno NE koristi,\ntj. da nije otvorena u (primjerice) Excel-u.')
             file_scan = askopenfile(mode='r', title='Učitajte RMK ili \'podaci.xlsx\' datoteku...', filetypes=[
                                     ("RMK/Excel files", ".rmk .xlsx .xls")])
     else:
@@ -544,21 +545,21 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
 
     lista_statusa = [[] for _ in range(len(lista))]
 
-    def guess_zadatak(i,lista):
+    def guess_zadatak(i, lista):
         zadatak_first_valid_before_the_current = None
         zadatak_first_valid_after_the_current = None
 
         tmp_i = i-1
-        while tmp_i>=0:
-            tmp_zad_str = str(lista[tmp_i]['zadatak']).replace(' ','')
+        while tmp_i >= 0:
+            tmp_zad_str = str(lista[tmp_i]['zadatak']).replace(' ', '')
             if tmp_zad_str.isdecimal():
                 zadatak_first_valid_before_the_current = int(tmp_zad_str)
                 break
             tmp_i -= 1
 
         tmp_i = i+1
-        while tmp_i<len(lista):
-            tmp_zad_str = str(lista[tmp_i]['zadatak']).replace(' ','')
+        while tmp_i < len(lista):
+            tmp_zad_str = str(lista[tmp_i]['zadatak']).replace(' ', '')
             if tmp_zad_str.isdecimal():
                 zadatak_first_valid_after_the_current = int(tmp_zad_str)
                 break
@@ -568,11 +569,6 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
             return zadatak_first_valid_before_the_current
         else:
             return None
-
-
-
-
-
 
     for i, unos in enumerate(lista):
         kod = unos['kod']
@@ -588,14 +584,15 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
         try:
             zad = int(zadatak)
             if zad < 1 or zad > BROJ_ZADATAKA:
-                zadGuessed = guess_zadatak(i,lista)
+                zadGuessed = guess_zadatak(i, lista)
                 if zadGuessed is not None:
                     zad = zadGuessed
                 else:
-                    lista_statusa[i].append('Broj zadatka izvan dozvoljenog ranga')
+                    lista_statusa[i].append(
+                        'Broj zadatka izvan dozvoljenog ranga')
                     problematicni.add(i)
         except ValueError:
-            zadGuessed = guess_zadatak(i,lista)
+            zadGuessed = guess_zadatak(i, lista)
             if zadGuessed is not None:
                 zad = zadGuessed
             else:
