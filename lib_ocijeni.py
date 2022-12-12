@@ -15,7 +15,7 @@ DEFAULT_bg_COLOR = None
 RED_bg_COLOR = '#FF3D3D'
 
 with io.BytesIO() as output:
-    Image.new('RGB', (1, 1)).save(output, format="PNG")
+    Image.new('RGB', (5, 5)).save(output, format="PNG")
     WHITE_PIXEL = output.getvalue()
 
 
