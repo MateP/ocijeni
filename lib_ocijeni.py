@@ -628,7 +628,7 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
             if zad < 1 or zad > BROJ_ZADATAKA:
                 zadGuessed = guess_zadatak(i, lista)
                 if zadGuessed is not None:
-                    zad = zadGuessed
+                    lista[i]['zadatak'] = str(zadGuessed)
                 else:
                     lista_statusa[i].append(
                         'Broj zadatka izvan dozvoljenog ranga')
@@ -636,7 +636,7 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
         except ValueError:
             zadGuessed = guess_zadatak(i, lista)
             if zadGuessed is not None:
-                zad = zadGuessed
+                lista[i]['zadatak'] = str(zadGuessed)
             else:
                 lista_statusa[i].append('Neispravan broj zadatka')
                 problematicni.add(i)
