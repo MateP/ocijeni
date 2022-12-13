@@ -540,6 +540,48 @@ def Odredi_broj_zadataka(root, dir_path):
     return BROJ_ZADATAKA
 
 
+class makePairedKodJMBAGStrVars:
+    """docstring for pairedEntryWidgetsKodJMBAG."""
+
+    def __init__(self, parentTk, kod2jmbag, jmbag2kod):
+        self.tv_kod = tk.StringVar(parentTk)
+        self.tv_jmbag = tk.StringVar(parentTk)
+        self.kod2jmbag = kod2jmbag
+        self.jmbag2kod = jmbag2kod
+        self.Lime = None
+
+    def setLime(self, Lime):
+        self.Lime = Lime
+
+    def onUpdateOfKod(self, *args):
+        if self.Lime is None:
+            raise ValueError('Lime (LabelIme) not set!')
+
+        kod = self.tv_kod.get()
+        if kod in self.kod2jmbag:
+            imePrezime = f'{self.kod2jmbag[kod]["IME"]} {self.kod2jmbag[kod]["PREZIME"]}'
+            jmbag = self.kod2jmbag[kod]['JMBAG']
+        else:
+            imePrezime = ''
+            jmbag = ''
+        self.Lime.configure(text=imePrezime)
+        self.tv_jmbag.set(jmbag)
+
+    def onUpdateOfJMBAG(self, *args):
+        if self.Lime is None:
+            raise ValueError('Lime (LabelIme) not set!')
+
+        jmbag = self.tv_jmbag.get()
+        if jmbag in self.jmbag2kod:
+            kod = self.jmbag2kod[jmbag]
+            imePrezime = f'{self.kod2jmbag[kod]["IME"]} {self.kod2jmbag[kod]["PREZIME"]}'
+        else:
+            imePrezime = ''
+            kod = ''
+        self.Lime.configure(text=imePrezime)
+        self.tv_kod.set(kod)
+
+
 def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_brisani, dir_path, dir_skenovi):
     problematicni = set()
 
@@ -640,33 +682,6 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
             lista_brisani[current] = False
             pazi['text'] = ';\n'.join(lista_statusa[current])
 
-    def update_polja(var, *kwargs):
-        if var == 'kod':
-            kod = tv_kod.get()
-            if kod in kod2jmbag:
-                Lime['text'] = kod2jmbag[kod]['IME'] + \
-                    ' ' + kod2jmbag[kod]['PREZIME']
-                jmbag = kod2jmbag[kod]['JMBAG']
-            else:
-                Lime['text'] = ''
-                jmbag = ''
-            tv_jmbag.trace_remove('write', tv_jmbag.trace_id)
-            tv_jmbag.set(jmbag)
-            tv_jmbag.trace_id = tv_jmbag.trace_add('write', update_polja)
-
-        elif var == 'jmbag':
-            jmbag = tv_jmbag.get()
-            if jmbag in jmbag2kod:
-                kod = jmbag2kod[jmbag]
-                Lime['text'] = kod2jmbag[kod]['IME'] + \
-                    ' ' + kod2jmbag[kod]['PREZIME']
-            else:
-                Lime['text'] = ''
-                kod = ''
-            tv_kod.trace_remove('write', tv_kod.trace_id)
-            tv_kod.set(kod)
-            tv_kod.trace_id = tv_kod.trace_add('write', update_polja)
-
     def show(current):
         nonlocal Front
 
@@ -700,6 +715,7 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
 
         clear()
         Ekod.insert(0, kod)
+        pariedKodJMBAGVars.onUpdateOfKod()
         Ezadatak.insert(0, zadatak)
         Ebodovi.insert(0, bodovi)
 
@@ -740,21 +756,25 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
     slika = tk.Label(frame)
     slika.grid(row=0, column=0, rowspan=40)
 
-    tv_kod = tk.StringVar(name='kod')
+    pariedKodJMBAGVars = makePairedKodJMBAGStrVars(frame, kod2jmbag, jmbag2kod)
+
     tk.Label(frame, text='KOD:').grid(row=1, column=1, sticky=tk.E)
-    Ekod = tk.Entry(frame, textvariable=tv_kod, width='12')
+    Ekod = tk.Entry(frame, textvariable=pariedKodJMBAGVars.tv_kod, width='12')
     Ekod.grid(row=1, column=2, sticky=tk.W, padx=5)
-    tv_kod.trace_id = tv_kod.trace_add('write', update_polja)
 
     tk.Label(frame, text='IME:').grid(row=2, column=1, sticky=tk.E)
     Lime = tk.Label(frame, text='', font='sans 18 bold', anchor='w')
     Lime.grid(row=2, column=2, sticky=tk.W, padx=5)
 
-    tv_jmbag = tk.StringVar(name='jmbag')
+    pariedKodJMBAGVars.setLime(Lime)
+
     tk.Label(frame, text='JMBAG:').grid(row=3, column=1, sticky=tk.E)
-    Ejmbag = tk.Entry(frame, textvariable=tv_jmbag, width='12')
+    Ejmbag = tk.Entry(
+        frame, textvariable=pariedKodJMBAGVars.tv_jmbag, width='12')
     Ejmbag.grid(row=3, column=2, sticky=tk.W, padx=5)
-    tv_jmbag.trace_id = tv_jmbag.trace_add('write', update_polja)
+
+    Ekod.bind("<Any-KeyRelease>", pariedKodJMBAGVars.onUpdateOfKod)
+    Ejmbag.bind("<Any-KeyRelease>", pariedKodJMBAGVars.onUpdateOfJMBAG)
 
     poz = 6
     tk.Label(frame, text='ZADATAK:').grid(row=poz, column=1, sticky=tk.E)
@@ -793,8 +813,6 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
     move(0, first=True)
 
     root.wait_window(frame)
-    tv_kod.trace_remove('write', tv_kod.trace_id)
-    tv_jmbag.trace_remove('write', tv_jmbag.trace_id)
 
 
 def kolizija(root, lista_ijeva_u_koliziji, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_brisani, dir_skenovi):
@@ -840,33 +858,6 @@ def kolizija(root, lista_ijeva_u_koliziji, lista, kod2jmbag, jmbag2kod, BROJ_ZAD
             lista_brisani[current] = False
             pazi['text'] = 'Na više\nlistova su označeni bodovi\nveći od nula.'
 
-    def update_polja(var, *kwargs):
-        if var == 'kod':
-            kod = tv_kod.get()
-            if kod in kod2jmbag:
-                Lime['text'] = kod2jmbag[kod]['IME'] + \
-                    ' ' + kod2jmbag[kod]['PREZIME']
-                jmbag = kod2jmbag[kod]['JMBAG']
-            else:
-                Lime['text'] = ''
-                jmbag = ''
-            tv_jmbag.trace_remove('write', tv_jmbag.trace_id)
-            tv_jmbag.set(jmbag)
-            tv_jmbag.trace_id = tv_jmbag.trace_add('write', update_polja)
-
-        elif var == 'jmbag':
-            jmbag = tv_jmbag.get()
-            if jmbag in jmbag2kod:
-                kod = jmbag2kod[jmbag]
-                Lime['text'] = kod2jmbag[kod]['IME'] + \
-                    ' ' + kod2jmbag[kod]['PREZIME']
-            else:
-                Lime['text'] = ''
-                kod = ''
-            tv_kod.trace_remove('write', tv_kod.trace_id)
-            tv_kod.set(kod)
-            tv_kod.trace_id = tv_kod.trace_add('write', update_polja)
-
     def show(current):
         nonlocal Front
 
@@ -886,6 +877,7 @@ def kolizija(root, lista_ijeva_u_koliziji, lista, kod2jmbag, jmbag2kod, BROJ_ZAD
 
         clear()
         Ekod.insert(0, kod)
+        pariedKodJMBAGVars.onUpdateOfKod()
         Ezadatak.insert(0, zadatak)
         Ebodovi.insert(0, bodovi)
 
@@ -920,21 +912,25 @@ def kolizija(root, lista_ijeva_u_koliziji, lista, kod2jmbag, jmbag2kod, BROJ_ZAD
     slika = tk.Label(frame)
     slika.grid(row=0, column=0, rowspan=40)
 
-    tv_kod = tk.StringVar(name='kod')
+    pariedKodJMBAGVars = makePairedKodJMBAGStrVars(frame, kod2jmbag, jmbag2kod)
+
     tk.Label(frame, text='KOD:').grid(row=1, column=1, sticky=tk.E)
-    Ekod = tk.Entry(frame, textvariable=tv_kod, width='12')
+    Ekod = tk.Entry(frame, textvariable=pariedKodJMBAGVars.tv_kod, width='12')
     Ekod.grid(row=1, column=2, sticky=tk.W, padx=5)
-    tv_kod.trace_id = tv_kod.trace_add('write', update_polja)
 
     tk.Label(frame, text='IME:').grid(row=2, column=1, sticky=tk.E)
     Lime = tk.Label(frame, text='', font='sans 18 bold', anchor='w')
     Lime.grid(row=2, column=2, sticky=tk.W, padx=5)
 
-    tv_jmbag = tk.StringVar(name='jmbag')
+    pariedKodJMBAGVars.setLime(Lime)
+
     tk.Label(frame, text='JMBAG:').grid(row=3, column=1, sticky=tk.E)
-    Ejmbag = tk.Entry(frame, textvariable=tv_jmbag, width='12')
+    Ejmbag = tk.Entry(
+        frame, textvariable=pariedKodJMBAGVars.tv_jmbag, width='12')
     Ejmbag.grid(row=3, column=2, sticky=tk.W, padx=5)
-    tv_jmbag.trace_id = tv_jmbag.trace_add('write', update_polja)
+
+    Ekod.bind("<Any-KeyRelease>", pariedKodJMBAGVars.onUpdateOfKod)
+    Ejmbag.bind("<Any-KeyRelease>", pariedKodJMBAGVars.onUpdateOfJMBAG)
 
     poz = 6
     tk.Label(frame, text='ZADATAK:').grid(row=poz, column=1, sticky=tk.E)
@@ -968,8 +964,6 @@ def kolizija(root, lista_ijeva_u_koliziji, lista, kod2jmbag, jmbag2kod, BROJ_ZAD
     move(0, first=True)
 
     root.wait_window(frame)
-    tv_kod.trace_remove('write', tv_kod.trace_id)
-    tv_jmbag.trace_remove('write', tv_jmbag.trace_id)
 
 
 def Obradi_nebodovane(root, nebodovani, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_brisani, dir_skenovi):
@@ -1016,33 +1010,6 @@ def Obradi_nebodovane(root, nebodovani, lista, kod2jmbag, jmbag2kod, BROJ_ZADATA
             lista_brisani[current] = False
             pazi['text'] = 'Nisu upisani bodovi.'
 
-    def update_polja(var, *kwargs):
-        if var == 'kod':
-            kod = tv_kod.get()
-            if kod in kod2jmbag:
-                Lime['text'] = kod2jmbag[kod]['IME'] + \
-                    ' ' + kod2jmbag[kod]['PREZIME']
-                jmbag = kod2jmbag[kod]['JMBAG']
-            else:
-                Lime['text'] = ''
-                jmbag = ''
-            tv_jmbag.trace_remove('write', tv_jmbag.trace_id)
-            tv_jmbag.set(jmbag)
-            tv_jmbag.trace_id = tv_jmbag.trace_add('write', update_polja)
-
-        elif var == 'jmbag':
-            jmbag = tv_jmbag.get()
-            if jmbag in jmbag2kod:
-                kod = jmbag2kod[jmbag]
-                Lime['text'] = kod2jmbag[kod]['IME'] + \
-                    ' ' + kod2jmbag[kod]['PREZIME']
-            else:
-                Lime['text'] = ''
-                kod = ''
-            tv_kod.trace_remove('write', tv_kod.trace_id)
-            tv_kod.set(kod)
-            tv_kod.trace_id = tv_kod.trace_add('write', update_polja)
-
     def show(current):
         nonlocal Front
 
@@ -1063,6 +1030,7 @@ def Obradi_nebodovane(root, nebodovani, lista, kod2jmbag, jmbag2kod, BROJ_ZADATA
 
         clear()
         Ekod.insert(0, kod)
+        pariedKodJMBAGVars.onUpdateOfKod()
         Ezadatak.insert(0, zadatak)
         Ebodovi.insert(0, bodovi)
 
@@ -1106,21 +1074,25 @@ def Obradi_nebodovane(root, nebodovani, lista, kod2jmbag, jmbag2kod, BROJ_ZADATA
     slika = tk.Label(frame)
     slika.grid(row=0, column=0, rowspan=40)
 
-    tv_kod = tk.StringVar(name='kod')
+    pariedKodJMBAGVars = makePairedKodJMBAGStrVars(frame, kod2jmbag, jmbag2kod)
+
     tk.Label(frame, text='KOD:').grid(row=1, column=1, sticky=tk.E)
-    Ekod = tk.Entry(frame, textvariable=tv_kod, width='12')
+    Ekod = tk.Entry(frame, textvariable=pariedKodJMBAGVars.tv_kod, width='12')
     Ekod.grid(row=1, column=2, sticky=tk.W, padx=5)
-    tv_kod.trace_id = tv_kod.trace_add('write', update_polja)
 
     tk.Label(frame, text='IME:').grid(row=2, column=1, sticky=tk.E)
     Lime = tk.Label(frame, text='', font='sans 18 bold', anchor='w')
     Lime.grid(row=2, column=2, sticky=tk.W, padx=5)
 
-    tv_jmbag = tk.StringVar(name='jmbag')
+    pariedKodJMBAGVars.setLime(Lime)
+
     tk.Label(frame, text='JMBAG:').grid(row=3, column=1, sticky=tk.E)
-    Ejmbag = tk.Entry(frame, textvariable=tv_jmbag, width='12')
+    Ejmbag = tk.Entry(
+        frame, textvariable=pariedKodJMBAGVars.tv_jmbag, width='12')
     Ejmbag.grid(row=3, column=2, sticky=tk.W, padx=5)
-    tv_jmbag.trace_id = tv_jmbag.trace_add('write', update_polja)
+
+    Ekod.bind("<Any-KeyRelease>", pariedKodJMBAGVars.onUpdateOfKod)
+    Ejmbag.bind("<Any-KeyRelease>", pariedKodJMBAGVars.onUpdateOfJMBAG)
 
     poz = 6
     tk.Label(frame, text='ZADATAK:').grid(row=poz, column=1, sticky=tk.E)
@@ -1162,8 +1134,6 @@ def Obradi_nebodovane(root, nebodovani, lista, kod2jmbag, jmbag2kod, BROJ_ZADATA
     move(0, first=True)
 
     root.wait_window(frame)
-    tv_kod.trace_remove('write', tv_kod.trace_id)
-    tv_jmbag.trace_remove('write', tv_jmbag.trace_id)
 
 
 def update_Studenti(Studenti, kod_old, zad_old, lista, lista_brisani, BROJ_ZADATAKA, kod2jmbag):
@@ -1256,33 +1226,6 @@ def provjeri_osobu(root, za_provjeriti, old_kod, Studenti, lista, kod2jmbag, jmb
             lista_brisani[current] = False
             pazi['text'] = ''
 
-    def update_polja(var, *kwargs):
-        if var == 'kod':
-            kod = tv_kod.get()
-            if kod in kod2jmbag:
-                Lime['text'] = kod2jmbag[kod]['IME'] + \
-                    ' ' + kod2jmbag[kod]['PREZIME']
-                jmbag = kod2jmbag[kod]['JMBAG']
-            else:
-                Lime['text'] = ''
-                jmbag = ''
-            tv_jmbag.trace_remove('write', tv_jmbag.trace_id)
-            tv_jmbag.set(jmbag)
-            tv_jmbag.trace_id = tv_jmbag.trace_add('write', update_polja)
-
-        elif var == 'jmbag':
-            jmbag = tv_jmbag.get()
-            if jmbag in jmbag2kod:
-                kod = jmbag2kod[jmbag]
-                Lime['text'] = kod2jmbag[kod]['IME'] + \
-                    ' ' + kod2jmbag[kod]['PREZIME']
-            else:
-                Lime['text'] = ''
-                kod = ''
-            tv_kod.trace_remove('write', tv_kod.trace_id)
-            tv_kod.set(kod)
-            tv_kod.trace_id = tv_kod.trace_add('write', update_polja)
-
     def show(current):
         nonlocal Front
 
@@ -1302,6 +1245,7 @@ def provjeri_osobu(root, za_provjeriti, old_kod, Studenti, lista, kod2jmbag, jmb
 
         clear()
         Ekod.insert(0, kod)
+        pariedKodJMBAGVars.onUpdateOfKod()
         Ezadatak.insert(0, zadatak)
         Ebodovi.insert(0, bodovi)
 
@@ -1336,21 +1280,25 @@ def provjeri_osobu(root, za_provjeriti, old_kod, Studenti, lista, kod2jmbag, jmb
     slika = tk.Label(frame)
     slika.grid(row=0, column=0, rowspan=40)
 
-    tv_kod = tk.StringVar(name='kod')
+    pariedKodJMBAGVars = makePairedKodJMBAGStrVars(frame, kod2jmbag, jmbag2kod)
+
     tk.Label(frame, text='KOD:').grid(row=1, column=1, sticky=tk.E)
-    Ekod = tk.Entry(frame, textvariable=tv_kod, width='12')
+    Ekod = tk.Entry(frame, textvariable=pariedKodJMBAGVars.tv_kod, width='12')
     Ekod.grid(row=1, column=2, sticky=tk.W, padx=5)
-    tv_kod.trace_id = tv_kod.trace_add('write', update_polja)
 
     tk.Label(frame, text='IME:').grid(row=2, column=1, sticky=tk.E)
     Lime = tk.Label(frame, text='', font='sans 18 bold', anchor='w')
     Lime.grid(row=2, column=2, sticky=tk.W, padx=5)
 
-    tv_jmbag = tk.StringVar(name='jmbag')
+    pariedKodJMBAGVars.setLime(Lime)
+
     tk.Label(frame, text='JMBAG:').grid(row=3, column=1, sticky=tk.E)
-    Ejmbag = tk.Entry(frame, textvariable=tv_jmbag, width='12')
+    Ejmbag = tk.Entry(
+        frame, textvariable=pariedKodJMBAGVars.tv_jmbag, width='12')
     Ejmbag.grid(row=3, column=2, sticky=tk.W, padx=5)
-    tv_jmbag.trace_id = tv_jmbag.trace_add('write', update_polja)
+
+    Ekod.bind("<Any-KeyRelease>", pariedKodJMBAGVars.onUpdateOfKod)
+    Ejmbag.bind("<Any-KeyRelease>", pariedKodJMBAGVars.onUpdateOfJMBAG)
 
     poz = 6
     tk.Label(frame, text='ZADATAK:').grid(row=poz, column=1, sticky=tk.E)
@@ -1384,8 +1332,6 @@ def provjeri_osobu(root, za_provjeriti, old_kod, Studenti, lista, kod2jmbag, jmb
     move(0, first=True)
 
     root.wait_window(frame)
-    tv_kod.trace_remove('write', tv_kod.trace_id)
-    tv_jmbag.trace_remove('write', tv_jmbag.trace_id)
 
     for zz in range(BROJ_ZADATAKA+1):
         Studenti[old_kod].zadaci_index[zz].clear()
