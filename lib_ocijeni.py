@@ -65,7 +65,11 @@ def Ucitaj_listu_izmjena(root, Fpromjene, jmbag2kod, BROJ_ZADATAKA):
     prom_ime = file_prom.name
     file_prom.close()
 
-    workbook = openpyxl.load_workbook(prom_ime, data_only=True)
+    try:
+        workbook = openpyxl.load_workbook(prom_ime, data_only=True)
+    except ValueError as e:
+        raise UserWarning('Provjerite da .xlsx datoteka koju učitavate nema nikakvog formatiranja teksta. Otvorite ju, napravite Select All (CTRL-A) i očistiti svo formatiranje: Home > Editing > Clear > Clear Formats.') from e
+
     worksheet = choose_worksheet(root, workbook)
 
     promjene = dict()
@@ -156,7 +160,11 @@ def Ucitaj_kodove(root, Fkod, dir_path):
     kod2jmbag = dict()
     jmbag2kod = dict()
 
-    workbook = openpyxl.load_workbook(name, data_only=True)
+    try:
+        workbook = openpyxl.load_workbook(name, data_only=True)
+    except ValueError as e:
+        raise UserWarning('Provjerite da .xlsx datoteka koju učitavate nema nikakvog formatiranja teksta. Otvorite ju, napravite Select All (CTRL-A) i očistiti svo formatiranje: Home > Editing > Clear > Clear Formats.') from e
+
     worksheet = choose_worksheet(root, workbook)
     worksheet_rows = worksheet.values
 
@@ -396,7 +404,11 @@ def Ucitaj_listu_rmk(rmk_file):
 
 
 def Ucitaj_listu_xlsx(xlsx_file):
-    workbook = openpyxl.load_workbook(xlsx_file.name, data_only=True)
+    try:
+        workbook = openpyxl.load_workbook(xlsx_file.name, data_only=True)
+    except ValueError as e:
+        raise UserWarning('Provjerite da .xlsx datoteka koju učitavate nema nikakvog formatiranja teksta. Otvorite ju, napravite Select All (CTRL-A) i očistiti svo formatiranje: Home > Editing > Clear > Clear Formats.') from e
+
     worksheet = workbook.worksheets[0]
     worksheet_rows = worksheet.values
 
