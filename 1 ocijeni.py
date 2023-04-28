@@ -10,7 +10,7 @@ Frmk = None
 
 if __name__ == '__main__':
     try:
-        root = tk.Tk()
+        root = myTk()
         root.title('Ocijeni')
         root.withdraw()
         # root.geometry('+0+0')
@@ -168,14 +168,14 @@ if __name__ == '__main__':
         root.destroy()
 
         ######## END PROGRAM ########
-        root = tk.Tk()
+        root = myTk()
         root.withdraw()
         messagebox.showinfo(
             'Uspjeh!', 'Obrada je uspješno privedena kraju. Datoteke za upload Vas čekaju u folderu sa skenovima.')
         root.destroy()
 
     except Exception as e:
-        root = tk.Tk()
+        root = myTk()
         root.withdraw()
         with open('error_log.txt', 'w') as f:
             f.write(f'{e}\n'+''.join(traceback.format_tb(e.__traceback__)))

@@ -15,14 +15,26 @@ KOD_NEPOZNAT_ = '***'
 DEFAULT_bg_COLOR = None
 RED_bg_COLOR = '#FF3D3D'
 
+
+class myTk(tk.Tk):
+    x = 0
+    y = 0
+
+class myToplevel(tk.Toplevel):
+    def destroy(self):
+        self.master.x = self.winfo_x()
+        self.master.y = self.winfo_y()
+        super().destroy()
+
+
 with io.BytesIO() as output:
     Image.new('RGB', (5, 5)).save(output, format="PNG")
     WHITE_PIXEL = output.getvalue()
 
 
 def popup(root, status):
-    popup = tk.Toplevel(root)
-    popup.geometry('+0+0')
+    popup = myToplevel(root)
+    popup.geometry(f'+{root.x}+{root.y}')
     popup.title('Uputa...')
 
     tk.Label(popup, text=status, width=80, height=10).grid(
@@ -111,8 +123,8 @@ def choose_worksheet(root, workbook):
     if len(workbook.worksheets) == 1:
         return workbook.worksheets[0]
 
-    popup = tk.Toplevel(root)
-    popup.geometry('+0+0')
+    popup = myToplevel(root)
+    popup.geometry(f'+{root.x}+{root.y}')
     popup.title('Izaberite worksheet...')
     choice = tk.IntVar(value=0)
 
@@ -138,12 +150,13 @@ class Student:
 
 def Ucitaj_kodove(root, Fkod, dir_path):
     if Fkod == None:
+        file_kodovi_path = None
         dst = os.path.join(dir_path, '_kodovi.txt')
         if os.path.exists(dst):
             with open(dst, 'r', newline='', encoding='utf-8') as f:
                 file_kodovi_path = f.read()
-                file_kodovi = open(file_kodovi_path, 'r',
-                                   newline='', encoding='utf-8')
+        if file_kodovi_path is not None and os.path.exists(file_kodovi_path):
+            file_kodovi = open(file_kodovi_path, 'r', newline='', encoding='utf-8')
         else:
             popup(root, 'Odaberite datoteku s kodovima za ovaj ispit...')
             file_kodovi = askopenfile(mode='r', title='Učitajte datoteku kodova...', filetypes=[
@@ -526,8 +539,10 @@ def Odredi_broj_zadataka(root, dir_path):
         with open(brzad_file, 'r', newline='', encoding='utf-8') as f:
             BROJ_ZADATAKA = int(f.read())
     else:
-        frame = tk.Toplevel(root)
+        frame = myToplevel(root)
         frame.title('Koji je broj zadataka na ovom ispitu?')
+        frame.geometry(f'+{root.x}+{root.y}')
+
         tk.Label(frame, text=f'Unesi broj zadataka na ovom ispitu:').grid(
             row=1, column=1, sticky=tk.E)
         unosBrZad = tk.Entry(frame, width='8')
@@ -761,9 +776,9 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
         spremi_trenutni()
         frame.destroy()
 
-    frame = tk.Toplevel(root)
+    frame = myToplevel(root)
     frame.title('Skenovi')
-    frame.geometry('+0+0')
+    frame.geometry(f'+{root.x}+{root.y}')
 
     slika = tk.Label(frame)
     slika.grid(row=0, column=0, rowspan=40)
@@ -917,9 +932,9 @@ def kolizija(root, lista_ijeva_u_koliziji, lista, kod2jmbag, jmbag2kod, BROJ_ZAD
         spremi_trenutni()
         frame.destroy()
 
-    frame = tk.Toplevel(root)
+    frame = myToplevel(root)
     frame.title('Skenovi')
-    frame.geometry('+0+0')
+    frame.geometry(f'+{root.x}+{root.y}')
 
     slika = tk.Label(frame)
     slika.grid(row=0, column=0, rowspan=40)
@@ -1079,9 +1094,9 @@ def Obradi_nebodovane(root, nebodovani, lista, kod2jmbag, jmbag2kod, BROJ_ZADATA
         spremi_trenutni()
         frame.destroy()
 
-    frame = tk.Toplevel(root)
+    frame = myToplevel(root)
     frame.title('Skenovi')
-    frame.geometry('+0+0')
+    frame.geometry(f'+{root.x}+{root.y}')
 
     slika = tk.Label(frame)
     slika.grid(row=0, column=0, rowspan=40)
@@ -1183,7 +1198,7 @@ def update_Studenti(Studenti, kod_old, zad_old, lista, lista_brisani, BROJ_ZADAT
         for i in tmp:
             try:
                 bod = int(lista[i]['bodovi'])
-                if(bod) > 0:
+                if bod > 0:
                     poz_bod += 1
             except:
                 pass
@@ -1285,9 +1300,9 @@ def provjeri_osobu(root, za_provjeriti, old_kod, Studenti, lista, kod2jmbag, jmb
         spremi_trenutni()
         frame.destroy()
 
-    frame = tk.Toplevel(root)
+    frame = myToplevel(root)
     frame.title('Skenovi')
-    frame.geometry('+0+0')
+    frame.geometry(f'+{root.x}+{root.y}')
 
     slika = tk.Label(frame)
     slika.grid(row=0, column=0, rowspan=40)
