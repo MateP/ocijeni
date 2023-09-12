@@ -54,7 +54,7 @@ def Otvori_rmk_podaci(root, Frmk, only_podaci=False):
             popup(
                 root, 'Odaberite datoteku .rmk u mapi sa skenovima iz CIP-a, ili datoteku podaci.xlsx...\n\n\n\nPobrinite se da se datoteka podaci.xlsx trenutno NE koristi,\ntj. da nije otvorena u (primjerice) Excel-u.')
             file_scan = askopenfile(mode='r', title='Učitajte RMK ili \'podaci.xlsx\' datoteku...', filetypes=[
-                                    ("RMK/Excel files", ".rmk .xlsx .xls")])
+                                    ("RMK/Excel files", ".rmk .xlsx .xls .csv")])
     else:
         file_scan = open(Frmk, 'r', newline='')
 
@@ -413,6 +413,21 @@ def Ucitaj_listu_rmk(rmk_file):
         unos = {'kod': kod, 'zadatak': row[DULJINA_KODA],
                 'bodovi': row[DULJINA_KODA+1], 'slikaF': slikaF, 'slikaB': slikaB}
         lista.append(unos)
+    return lista
+
+def Ucitaj_listu_csv(rmk_file):
+
+    lista = []
+
+    with open(rmk_file.name, 'r', newline='', encoding='utf-8') as results_file:
+        reader = csv.DictReader(results_file)
+
+        for row in reader:
+            next_row=next(reader)
+            unos = {'kod': f'{int(row["code"])}'.zfill(DULJINA_KODA), 'zadatak': row['task'],
+                    'bodovi': row['points'], 'slikaF': row['filename'], 'slikaB': next_row['filename']}
+            lista.append(unos)
+
     return lista
 
 

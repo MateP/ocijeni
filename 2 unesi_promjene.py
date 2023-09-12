@@ -42,6 +42,9 @@ if __name__ == '__main__':
         if file_podaci.name.split('.')[-1] == 'rmk':
             lista = Ucitaj_listu_rmk(file_podaci)
             lista_brisani = [False, ]*len(lista)
+        elif file_podaci.name.split('.')[-1] == 'csv':
+            lista = Ucitaj_listu_csv(file_podaci)
+            lista_brisani = [False, ]*len(lista)
         else:
             lista, lista_brisani = Ucitaj_listu_xlsx(file_podaci)
         file_podaci.close()
