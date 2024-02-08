@@ -1209,16 +1209,15 @@ def update_Studenti(Studenti, kod_old, zad_old, lista, lista_brisani, BROJ_ZADAT
         Studenti[kod].zadaci_index[zad].append(i)
 
     if len(tmp) == len(Studenti[kod_old].zadaci_index[zad_old]):
-        poz_bod = 0
+        upisani_bodovi = 0
         for i in tmp:
             try:
                 bod = int(lista[i]['bodovi'])
-                if bod > 0:
-                    poz_bod += 1
+                upisani_bodovi += 1
             except:
                 pass
 
-        if poz_bod > 1:
+        if upisani_bodovi > 1:
             for i in tmp:
                 lista[i]['bodovi'] = None
 
