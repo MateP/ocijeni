@@ -123,8 +123,8 @@ if __name__ == '__main__':
                             try:
                                 bod = int(lista[i]['bodovi'])
                             except:
-                                bod = 0
-                            if bod != 0:
+                                bod = None
+                            if bod is not None:
                                 bodovi.add(i)
                         if len(bodovi) > 1:
                             postoji_kolizija = True

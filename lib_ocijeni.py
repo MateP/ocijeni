@@ -690,7 +690,7 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
         image = Image.open(os.path.join(dir_skenovi, image_name))
         height = int(frame.winfo_screenheight()*0.85)
         width = int(21*height/29.7)
-        image = image.resize((width, height), Image.ANTIALIAS)
+        image = image.resize((width, height), Image.LANCZOS)
         canvas = tk.Canvas(frame, width=width, height=height)
         photo = ImageTk.PhotoImage(image, master=canvas)
         slika['image'] = photo
@@ -866,7 +866,7 @@ def kolizija(root, lista_ijeva_u_koliziji, lista, kod2jmbag, jmbag2kod, BROJ_ZAD
         image = Image.open(os.path.join(dir_skenovi, image_name))
         height = int(frame.winfo_screenheight()*0.85)
         width = int(21*height/29.7)
-        image = image.resize((width, height), Image.ANTIALIAS)
+        image = image.resize((width, height), Image.LANCZOS)
         canvas = tk.Canvas(frame, width=width, height=height)
         photo = ImageTk.PhotoImage(image, master=canvas)
         slika['image'] = photo
@@ -898,7 +898,7 @@ def kolizija(root, lista_ijeva_u_koliziji, lista, kod2jmbag, jmbag2kod, BROJ_ZAD
             pazi['text'] = '------ ZA BRISANJE ------'
         else:
             lista_brisani[current] = False
-            pazi['text'] = 'Na više\nlistova su označeni bodovi\nveći od nula.'
+            pazi['text'] = 'Na više\nlistova su označeni bodovi.'
 
     def show(current):
         nonlocal Front
@@ -912,7 +912,7 @@ def kolizija(root, lista_ijeva_u_koliziji, lista, kod2jmbag, jmbag2kod, BROJ_ZAD
         slikaF = unos['slikaF']
         slikaB = unos['slikaB']
 
-        pazi['text'] = '------ ZA BRISANJE ------' if lista_brisani[current] == True else 'Na više\nlistova su označeni bodovi\nveći od nula.'
+        pazi['text'] = '------ ZA BRISANJE ------' if lista_brisani[current] == True else 'Na više\nlistova su označeni bodovi.'
 
         loadimage(slikaF)
         Front = True
@@ -1018,7 +1018,7 @@ def Obradi_nebodovane(root, nebodovani, lista, kod2jmbag, jmbag2kod, BROJ_ZADATA
         image = Image.open(os.path.join(dir_skenovi, image_name))
         height = int(frame.winfo_screenheight()*0.85)
         width = int(21*height/29.7)
-        image = image.resize((width, height), Image.ANTIALIAS)
+        image = image.resize((width, height), Image.LANCZOS)
         canvas = tk.Canvas(frame, width=width, height=height)
         photo = ImageTk.PhotoImage(image, master=canvas)
         slika['image'] = photo
@@ -1234,7 +1234,7 @@ def provjeri_osobu(root, za_provjeriti, old_kod, Studenti, lista, kod2jmbag, jmb
         image = Image.open(os.path.join(dir_skenovi, image_name))
         height = int(frame.winfo_screenheight()*0.85)
         width = int(21*height/29.7)
-        image = image.resize((width, height), Image.ANTIALIAS)
+        image = image.resize((width, height), Image.LANCZOS)
         canvas = tk.Canvas(frame, width=width, height=height)
         photo = ImageTk.PhotoImage(image, master=canvas)
         slika['image'] = photo
