@@ -220,6 +220,19 @@ def Generiraj_datoteke_za_upload(root, lista, Studenti, dir_path, dir_skenovi, B
     csv_file = open(os.path.join(dir_path_child, 'odgovori.csv'),
                     'w', newline='', encoding='utf-8')
 
+    if promjene != None:
+        dir_path_child_izmjene = os.path.join(dir_path, 'upload_izmjene')
+        if not os.path.exists(dir_path_child_izmjene):
+            os.makedirs(dir_path_child_izmjene)
+
+        rmk_file_izmjene = open(os.path.join(dir_path_child_izmjene, 'cheat.rmk'),
+                    'w', newline='', encoding='utf-8')
+        csv_file_izmjene = open(os.path.join(dir_path_child_izmjene, 'odgovori.csv'),
+                    'w', newline='', encoding='utf-8')
+
+        rmk_file_izmjene.write(f'X\tX\t{BROJ_ZADATAKA+2}')
+        csvwriter_izmjene = csv.writer(csv_file_izmjene, delimiter=';')
+
     xlsx_name = os.path.join(
         dir_path, f'{"lista" if novo_ime==None else novo_ime}.xlsx')
     workbook = openpyxl.Workbook()
@@ -294,6 +307,20 @@ def Generiraj_datoteke_za_upload(root, lista, Studenti, dir_path, dir_skenovi, B
 
             pdf_filename = os.path.join(dir_path_child, f'{student.jmbag}.pdf')
 
+            if promjene != None:
+                if kod in promjene:
+                    rmk_file_izmjene.write(
+                        f'\n{student.jmbag}\tG{student.jmbag}'+BROJ_ZADATAKA*'\tA'+'\nX')
+
+                    csvwriter_izmjene.writerow(
+                        ['#', ]+[f'Z{i}' for i in range(1, BROJ_ZADATAKA+1)])
+                    csvwriter_izmjene.writerow([f'G{student.jmbag}'] + BROJ_ZADATAKA*['A'])
+                    csvwriter_izmjene.writerow(['T'] + zadaci)
+                    csvwriter_izmjene.writerow(['N'] + BROJ_ZADATAKA*[0])
+
+                    pdf_filename_izmjene = os.path.join(dir_path_child_izmjene, f'{student.jmbag}.pdf')
+
+
         if len(slike) == 0:
             im_list = [WHITE_PIXEL]
         else:
@@ -301,9 +328,16 @@ def Generiraj_datoteke_za_upload(root, lista, Studenti, dir_path, dir_skenovi, B
 
         with open(pdf_filename, "wb") as f:
             f.write(img2pdf.convert(im_list, engine=img2pdf.Engine.internal))
+        if promjene != None:
+            if kod in promjene:
+                with open(pdf_filename_izmjene, "wb") as f:
+                    f.write(img2pdf.convert(im_list, engine=img2pdf.Engine.internal))
 
     rmk_file.close()
     csv_file.close()
+    if promjene != None:
+        rmk_file_izmjene.close()
+        csv_file_izmjene.close()
     workbook.save(xlsx_name)
 
     pickle_file = os.path.join(dir_path, '_upisani.pickle')
