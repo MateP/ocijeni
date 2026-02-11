@@ -1,3 +1,4 @@
 img2pdf
 pillow
 openpyxl
+python-tkdnd

@@ -20,6 +20,7 @@ class myTk(tk.Tk):
     x = 0
     y = 0
 
+
 class myToplevel(tk.Toplevel):
     def destroy(self):
         self.master.x = self.winfo_x()
@@ -156,7 +157,8 @@ def Ucitaj_kodove(root, Fkod, dir_path):
             with open(dst, 'r', newline='', encoding='utf-8') as f:
                 file_kodovi_path = f.read()
         if file_kodovi_path is not None and os.path.exists(file_kodovi_path):
-            file_kodovi = open(file_kodovi_path, 'r', newline='', encoding='utf-8')
+            file_kodovi = open(file_kodovi_path, 'r',
+                               newline='', encoding='utf-8')
         else:
             popup(root, 'Odaberite datoteku s kodovima za ovaj ispit...')
             file_kodovi = askopenfile(mode='r', title='Učitajte datoteku kodova...', filetypes=[
@@ -226,15 +228,15 @@ def Generiraj_datoteke_za_upload(root, lista, Studenti, dir_path, dir_skenovi, B
             os.makedirs(dir_path_child_izmjene)
 
         rmk_file_izmjene = open(os.path.join(dir_path_child_izmjene, 'cheat.rmk'),
-                    'w', newline='', encoding='utf-8')
+                                'w', newline='', encoding='utf-8')
         csv_file_izmjene = open(os.path.join(dir_path_child_izmjene, 'odgovori.csv'),
-                    'w', newline='', encoding='utf-8')
+                                'w', newline='', encoding='utf-8')
 
         rmk_file_izmjene.write(f'X\tX\t{BROJ_ZADATAKA+2}')
         csvwriter_izmjene = csv.writer(csv_file_izmjene, delimiter=';')
 
     xlsx_name = os.path.join(
-        dir_path, f'{"lista" if novo_ime==None else novo_ime}.xlsx')
+        dir_path, f'{"lista" if novo_ime == None else novo_ime}.xlsx')
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
 
@@ -314,12 +316,13 @@ def Generiraj_datoteke_za_upload(root, lista, Studenti, dir_path, dir_skenovi, B
 
                     csvwriter_izmjene.writerow(
                         ['#', ]+[f'Z{i}' for i in range(1, BROJ_ZADATAKA+1)])
-                    csvwriter_izmjene.writerow([f'G{student.jmbag}'] + BROJ_ZADATAKA*['A'])
+                    csvwriter_izmjene.writerow(
+                        [f'G{student.jmbag}'] + BROJ_ZADATAKA*['A'])
                     csvwriter_izmjene.writerow(['T'] + zadaci)
                     csvwriter_izmjene.writerow(['N'] + BROJ_ZADATAKA*[0])
 
-                    pdf_filename_izmjene = os.path.join(dir_path_child_izmjene, f'{student.jmbag}.pdf')
-
+                    pdf_filename_izmjene = os.path.join(
+                        dir_path_child_izmjene, f'{student.jmbag}.pdf')
 
         if len(slike) == 0:
             im_list = [WHITE_PIXEL]
@@ -331,7 +334,8 @@ def Generiraj_datoteke_za_upload(root, lista, Studenti, dir_path, dir_skenovi, B
         if promjene != None:
             if kod in promjene:
                 with open(pdf_filename_izmjene, "wb") as f:
-                    f.write(img2pdf.convert(im_list, engine=img2pdf.Engine.internal))
+                    f.write(img2pdf.convert(
+                        im_list, engine=img2pdf.Engine.internal))
 
     rmk_file.close()
     csv_file.close()
@@ -449,15 +453,16 @@ def Ucitaj_listu_rmk(rmk_file):
         lista.append(unos)
     return lista
 
-def Ucitaj_listu_csv(rmk_file):
+
+def Ucitaj_listu_csv(csv_file):
 
     lista = []
 
-    with open(rmk_file.name, 'r', newline='', encoding='utf-8') as results_file:
+    with open(csv_file.name, 'r', newline='', encoding='utf-8') as results_file:
         reader = csv.DictReader(results_file)
 
         for row in reader:
-            next_row=next(reader)
+            next_row = next(reader)
             unos = {'kod': f'{int(row["code"])}'.zfill(DULJINA_KODA), 'zadatak': row['task'],
                     'bodovi': row['points'], 'slikaF': row['filename'], 'slikaB': next_row['filename']}
             lista.append(unos)
