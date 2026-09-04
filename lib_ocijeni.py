@@ -6,6 +6,7 @@ import pickle
 import img2pdf
 import io
 from tkinter.filedialog import askopenfile
+from tkinter import messagebox
 from PIL import Image, ImageTk
 import tkinter as tk
 
@@ -20,12 +21,46 @@ class myTk(tk.Tk):
     x = 0
     y = 0
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.bind_class('Entry', '<Control-a>', select_all)
+        self.bind_all('<Escape>', self.confirm_exit)
+
+    def confirm_exit(self, event=None):
+        if messagebox.askyesno(
+                'Izlaz', 'Jeste li sigurni da želite završiti program?',
+                parent=self):
+            self.after_idle(lambda: os._exit(0))
+        return 'break'
+
 
 class myToplevel(tk.Toplevel):
     def destroy(self):
         self.master.x = self.winfo_x()
         self.master.y = self.winfo_y()
         super().destroy()
+
+
+def select_all(event):
+    event.widget.select_range(0, tk.END)
+    event.widget.icursor(tk.END)
+    return 'break'
+
+
+def bind_navigation(frame, move):
+    binding_ids = []
+    for sequence, delta in (
+            ('<Left>', -1), ('<Right>', 1),
+            ('<Control-Left>', -2), ('<Control-Right>', 2)):
+        binding_ids.append(
+            (sequence, frame.bind(
+                sequence, lambda event, delta=delta: (move(delta), 'break')[1])))
+    return binding_ids
+
+
+def unbind_navigation(frame, binding_ids):
+    for sequence, binding_id in binding_ids:
+        frame.unbind(sequence, binding_id)
 
 
 with io.BytesIO() as output:
@@ -826,6 +861,7 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
 
     def quit():
         spremi_trenutni()
+        unbind_navigation(frame, navigation_bindings)
         frame.destroy()
 
     frame = myToplevel(root)
@@ -891,6 +927,7 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
     tk.Button(frame, text='Završi', command=quit).grid(
         row=38, column=1, columnspan=2)
 
+    navigation_bindings = bind_navigation(frame, move)
     move(0, first=True)
 
     root.wait_window(frame)
@@ -984,6 +1021,7 @@ def kolizija(root, lista_ijeva_u_koliziji, lista, kod2jmbag, jmbag2kod, BROJ_ZAD
 
     def quit():
         spremi_trenutni()
+        unbind_navigation(frame, navigation_bindings)
         frame.destroy()
 
     frame = myToplevel(root)
@@ -1044,6 +1082,7 @@ def kolizija(root, lista_ijeva_u_koliziji, lista, kod2jmbag, jmbag2kod, BROJ_ZAD
     tk.Button(frame, text='Završi', command=quit).grid(
         row=38, column=1, columnspan=2)
 
+    navigation_bindings = bind_navigation(frame, move)
     move(0, first=True)
 
     root.wait_window(frame)
@@ -1148,6 +1187,7 @@ def Obradi_nebodovane(root, nebodovani, lista, kod2jmbag, jmbag2kod, BROJ_ZADATA
 
     def quit():
         spremi_trenutni()
+        unbind_navigation(frame, navigation_bindings)
         frame.destroy()
 
     frame = myToplevel(root)
@@ -1216,6 +1256,7 @@ def Obradi_nebodovane(root, nebodovani, lista, kod2jmbag, jmbag2kod, BROJ_ZADATA
     tk.Button(frame, text='Završi', command=quit).grid(
         row=38, column=1, columnspan=2)
 
+    navigation_bindings = bind_navigation(frame, move)
     move(0, first=True)
 
     root.wait_window(frame)
@@ -1355,6 +1396,7 @@ def provjeri_osobu(root, za_provjeriti, old_kod, Studenti, lista, kod2jmbag, jmb
 
     def quit():
         spremi_trenutni()
+        unbind_navigation(frame, navigation_bindings)
         frame.destroy()
 
     frame = myToplevel(root)
@@ -1415,6 +1457,7 @@ def provjeri_osobu(root, za_provjeriti, old_kod, Studenti, lista, kod2jmbag, jmb
     tk.Button(frame, text='Završi', command=quit).grid(
         row=38, column=1, columnspan=2)
 
+    navigation_bindings = bind_navigation(frame, move)
     move(0, first=True)
 
     root.wait_window(frame)
