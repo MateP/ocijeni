@@ -842,7 +842,9 @@ def Popravi_kod_zadatak(root, lista, kod2jmbag, jmbag2kod, BROJ_ZADATAKA, lista_
     Ekod.grid(row=1, column=2, sticky=tk.W, padx=5)
 
     tk.Label(frame, text='IME:').grid(row=2, column=1, sticky=tk.E)
-    Lime = tk.Label(frame, text='', font='sans 18 bold', anchor='w')
+    Lime = tk.Label(
+        frame, text='', font='sans 18 bold', anchor='w', width=28, height=3,
+        wraplength=360, justify=tk.LEFT)
     Lime.grid(row=2, column=2, sticky=tk.W, padx=5)
 
     pariedKodJMBAGVars.setLime(Lime)
@@ -998,7 +1000,9 @@ def kolizija(root, lista_ijeva_u_koliziji, lista, kod2jmbag, jmbag2kod, BROJ_ZAD
     Ekod.grid(row=1, column=2, sticky=tk.W, padx=5)
 
     tk.Label(frame, text='IME:').grid(row=2, column=1, sticky=tk.E)
-    Lime = tk.Label(frame, text='', font='sans 18 bold', anchor='w')
+    Lime = tk.Label(
+        frame, text='', font='sans 18 bold', anchor='w', width=28, height=3,
+        wraplength=360, justify=tk.LEFT)
     Lime.grid(row=2, column=2, sticky=tk.W, padx=5)
 
     pariedKodJMBAGVars.setLime(Lime)
@@ -1160,7 +1164,9 @@ def Obradi_nebodovane(root, nebodovani, lista, kod2jmbag, jmbag2kod, BROJ_ZADATA
     Ekod.grid(row=1, column=2, sticky=tk.W, padx=5)
 
     tk.Label(frame, text='IME:').grid(row=2, column=1, sticky=tk.E)
-    Lime = tk.Label(frame, text='', font='sans 18 bold', anchor='w')
+    Lime = tk.Label(
+        frame, text='', font='sans 18 bold', anchor='w', width=28, height=3,
+        wraplength=360, justify=tk.LEFT)
     Lime.grid(row=2, column=2, sticky=tk.W, padx=5)
 
     pariedKodJMBAGVars.setLime(Lime)
@@ -1365,7 +1371,9 @@ def provjeri_osobu(root, za_provjeriti, old_kod, Studenti, lista, kod2jmbag, jmb
     Ekod.grid(row=1, column=2, sticky=tk.W, padx=5)
 
     tk.Label(frame, text='IME:').grid(row=2, column=1, sticky=tk.E)
-    Lime = tk.Label(frame, text='', font='sans 18 bold', anchor='w')
+    Lime = tk.Label(
+        frame, text='', font='sans 18 bold', anchor='w', width=28, height=3,
+        wraplength=360, justify=tk.LEFT)
     Lime.grid(row=2, column=2, sticky=tk.W, padx=5)
 
     pariedKodJMBAGVars.setLime(Lime)
