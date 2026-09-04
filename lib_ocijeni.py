@@ -88,14 +88,13 @@ def Ucitaj_listu_izmjena(root, Fpromjene, jmbag2kod, BROJ_ZADATAKA):
     promjene = dict()
 
     worksheet_rows = worksheet.values
-    head = [str(nm).upper() for nm in next(worksheet_rows)]
+    head = [str(nm).strip().upper() for nm in next(worksheet_rows)]
     i_jmbag = head.index('JMBAG')
     i_z = dict()
     for zad in range(1, BROJ_ZADATAKA+1):
         i_z[zad] = head.index(f'Z{zad}')
 
-    for rowx in range(worksheet.max_row-1):
-        row = next(worksheet_rows)
+    for row in worksheet_rows:
         jmbag = row[i_jmbag]
         if jmbag != None:
             jmbag = f'{int(jmbag):010}'
@@ -183,7 +182,7 @@ def Ucitaj_kodove(root, Fkod, dir_path):
     worksheet = choose_worksheet(root, workbook)
     worksheet_rows = worksheet.values
 
-    head = [str(nm).upper() for nm in next(worksheet_rows)]
+    head = [str(nm).strip().upper() for nm in next(worksheet_rows)]
 
     i_jmbag = head.index('JMBAG')
     i_kod = head.index('KOD')
@@ -194,8 +193,7 @@ def Ucitaj_kodove(root, Fkod, dir_path):
     except:
         i_ime, i_prezime = None, None
 
-    for rowx in range(worksheet.max_row-1):
-        row = next(worksheet_rows)
+    for row in worksheet_rows:
         kod, jmbag = row[i_kod], row[i_jmbag]
         if kod != None and jmbag != None:
             if i_ime != None and i_prezime != None:
@@ -463,7 +461,7 @@ def Ucitaj_listu_csv(csv_file):
 
         for row in reader:
             next_row = next(reader)
-            unos = {'kod': f'{int(row["code"])}'.zfill(DULJINA_KODA), 'zadatak': row['task'],
+            unos = {'kod': f'{int(row['code'])}'.zfill(DULJINA_KODA), 'zadatak': row['task'],
                     'bodovi': row['points'], 'slikaF': row['filename'], 'slikaB': next_row['filename']}
             lista.append(unos)
 
@@ -479,30 +477,30 @@ def Ucitaj_listu_xlsx(xlsx_file):
     worksheet = workbook.worksheets[0]
     worksheet_rows = worksheet.values
 
-    # head = [str(nm).upper() for nm in next(worksheet_rows)]
-    next(worksheet_rows)
+    head = [str(nm).strip().upper() for nm in next(worksheet_rows)]
+    required = ['KOD', 'ZADATAK', 'BODOVI', 'SLIKA_F', 'SLIKA_B']
+    indices = {col: head.index(col) for col in required}
 
     lista = []
     lista_brisani = []
-    for rowx in range(worksheet.max_row-1):
-        row = next(worksheet_rows)
-        if type(row[0]) in [int, float]:
-            kod = f'{int(row[0])}'.zfill(DULJINA_KODA)
+    for row in worksheet_rows:
+        if type(row[indices['KOD']]) in [int, float]:
+            kod = f'{int(row[indices['KOD']])}'.zfill(DULJINA_KODA)
         else:
-            kod = str(row[0])
+            kod = str(row[indices['KOD']])
 
-        if type(row[4]) in [int, float]:
-            zad = int(row[4])
+        if type(row[indices['ZADATAK']]) in [int, float]:
+            zad = int(row[indices['ZADATAK']])
         else:
-            zad = str(row[4])
+            zad = str(row[indices['ZADATAK']])
 
-        if type(row[5]) in [int, float]:
-            bod = int(row[5])
+        if type(row[indices['BODOVI']]) in [int, float]:
+            bod = int(row[indices['BODOVI']])
         else:
-            bod = str(row[5])
+            bod = str(row[indices['BODOVI']])
 
         unos = {'kod': kod, 'zadatak': zad, 'bodovi': bod,
-                'slikaF': row[6], 'slikaB': row[7]}
+                'slikaF': row[indices['SLIKA_F']], 'slikaB': row[indices['SLIKA_B']]}
         lista.append(unos)
         lista_brisani.append(True if kod == BRISAN_ else False)
     return lista, lista_brisani
